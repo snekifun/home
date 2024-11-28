@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sneki.fun</title>
+    <title>Colliding Snakes</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             min-height: 100vh;
-            background-color: #f0f0f0;
+            background-color: #1a1a1a;
             overflow: hidden;
         }
 
@@ -27,6 +27,12 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.5));
+            transition: all 2s ease-in-out, filter 0.3s ease;
+        }
+
+        .snake:hover {
+            filter: drop-shadow(0 0 20px rgba(0, 255, 0, 0.8));
         }
 
         .snake1 {
@@ -84,7 +90,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: yellow;
+            background-color: #333;
             opacity: 0;
             pointer-events: none;
             z-index: 90;
@@ -172,7 +178,7 @@
         // Add click handlers to snakes
         snakes.forEach(snake => {
             snake.addEventListener('click', () => {
-                window.location.href = 'https://x.com/SnekiFun';
+                window.location.href = 'https://x.com';
             });
         });
 
