@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sneki.fun</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .snake {
+            font-size: 100px;
+            position: absolute;
+            transition: all 2s ease-in-out;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .snake1 {
+            animation: rotate 1s linear infinite;
+        }
+
+        .snake2 {
+            animation: rotate-reverse 0.7s linear infinite;
+        }
+
+        @keyframes rotate-reverse {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(-360deg);
+            }
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .boom {
+            position: absolute;
+            font-size: 150px;
+            display: none;
+            animation: explode 1s ease-out;
+            z-index: 100;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        .flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: yellow;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 90;
+        }
+
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="snake snake1">🐍</div>
+    <div class="snake snake2">🐍</div>
+    <div class="boom">💥</div>
+    <div class="flash"></div>
+
+    <script>
+        const snakes = document.querySelectorAll('.snake');
+        const boom = document.querySelector('.boom');
+        const flash = document.querySelector('.flash');
+        let canCollide = true;
+
+        function checkCollision(snake1, snake2) {
+            const rect1 = snake1.getBoundingClientRect();
+            const rect2 = snake2.getBoundingClientRect();
+
+            return !(rect1.right < rect2.left || 
+                    rect1.left > rect2.right || 
+                    rect1.bottom < rect2.top || 
+                    rect1.top > rect2.bottom);
+        }
+
+        function showExplosion(x, y) {
+            if (!canCollide) return;
+            
+            canCollide = false;
+            boom.style.display = 'block';
+            boom.style.left = `${x - 75}px`;
+            boom.style.top = `${y - 75}px`;
+            
+            // Flash effect
+            flash.style.animation = 'flash 0.5s ease-out';
+            
+            // Reset boom animation
+            boom.style.animation = 'none';
+            boom.offsetHeight; // Trigger reflow
+            boom.style.animation = 'explode 1s ease-out';
+
+            setTimeout(() => {
+                boom.style.display = 'none';
+                flash.style.animation = 'none';
+                canCollide = true;
+            }, 1000);
+        }
+        
+        function moveSnake(snake) {
+            const maxX = window.innerWidth - 100;
+            const maxY = window.innerHeight - 100;
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            
+            snake.style.left = `${randomX}px`;
+            snake.style.top = `${randomY}px`;
+
+            // Check for collision after movement
+            const [snake1, snake2] = snakes;
+            if (checkCollision(snake1, snake2)) {
+                const x = (parseFloat(snake1.style.left) + parseFloat(snake2.style.left)) / 2;
+                const y = (parseFloat(snake1.style.top) + parseFloat(snake2.style.top)) / 2;
+                showExplosion(x, y);
+            }
+        }
+
+        // Initial positions
+        snakes.forEach(snake => moveSnake(snake));
+        
+        // Move snakes every 2 seconds
+        setInterval(() => {
+            snakes.forEach(snake => moveSnake(snake));
+        }, 2000);
+
+        // Add click handlers to snakes
+        snakes.forEach(snake => {
+            snake.addEventListener('click', () => {
+                window.location.href = 'https://x.com/SnekiFun';
+            });
+        });
+
+        // Reset flash animation
+        flash.addEventListener('animationend', () => {
+            flash.style.animation = 'none';
+        });
+    </script>
+</body>
+</html>
